@@ -6,6 +6,7 @@ import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.dto.CursosActivosDTO;
 import com.findo.colegio.dto.FechaDTO;
+import com.findo.colegio.dto.JovenesDTO;
 import com.findo.colegio.service.ColegioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,12 +59,17 @@ public class ColegioController {
     @PostMapping(value = "/inscripcion", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esInscripcion(@RequestBody Inscripcion inscripcion) {
         try {
-            if(isInscripcion(inscripcion) && colegioService.crearInscripcion(inscripcion))
+            if(isInscripcion(inscripcion))
             {
-                return new ResponseEntity<>(HttpStatus.OK);
+                if(colegioService.crearInscripcion(inscripcion)) {
+                    return new ResponseEntity<>(HttpStatus.OK);
+                }
+                else{
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
             }
             else {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
         } catch (Exception ex) {
@@ -71,10 +77,18 @@ public class ColegioController {
         }
     }
 
-    @GetMapping(value = "/activos", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/fecha", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats(@RequestBody FechaDTO fecha) {
         //CursosActivosDTO cursosActivos = new CursosActivosDTO(colegioService.countHumans(), colegioService.countMutants());
         colegioService.horasSemanalesTotales(fecha);
+        return new ResponseEntity<>(HttpStatus.OK);
+        //return ResponseEntity.status(HttpStatus.OK).body(cursosActivos);
+    }
+
+    @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getStats(@RequestBody JovenesDTO jovenes) {
+        //CursosActivosDTO cursosActivos = new CursosActivosDTO(colegioService.countHumans(), colegioService.countMutants());
+        colegioService.jovenes(jovenes);
         return new ResponseEntity<>(HttpStatus.OK);
         //return ResponseEntity.status(HttpStatus.OK).body(cursosActivos);
     }

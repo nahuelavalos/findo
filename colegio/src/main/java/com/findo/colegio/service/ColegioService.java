@@ -4,6 +4,7 @@ import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.dto.FechaDTO;
+import com.findo.colegio.dto.JovenesDTO;
 import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
 import com.findo.colegio.repository.InscripcionRepository;
@@ -145,12 +146,15 @@ public class ColegioService {
 
     public boolean crearInscripcion(Inscripcion inscripcion) {
         Optional<Inscripcion> inscripcionExistente = inscripcionRepository.findById(inscripcion.getId());
-        if (!inscripcionExistente.isPresent()) {
+        Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
+        Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
+
+        if (!inscripcionExistente.isPresent() && alumnoExistente.isPresent() && cursoExistente.isPresent()) {
             inscripcionRepository.save(inscripcion);
             return true;
         }
         else {
-            System.out.println("Inscripcion Existente");
+            System.out.println("Inscripcion Existente o Alumno/Curso Inexistente");
             System.out.print("-------------------------------------------------------");
             System.out.println("-----------------------------------------------------");
             return false;
@@ -163,8 +167,8 @@ public class ColegioService {
     public void horasSemanalesTotales(FechaDTO fecha) {
 
         List<Curso> cursoExistente = cursoRepository.findAll();
-        int horasSemanalesTotales = 0;
-        int cantidadDeAlumnos = 0;
+        Integer horasSemanalesTotales = 0;
+        Integer cantidadDeAlumnos = 0;
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
@@ -179,15 +183,57 @@ public class ColegioService {
                 System.out.println("Nombre: "+ cursoExistente.get(i).getNombre());
 
 
-                //cantidadDeAlumnos+=countAlumnos(cursoExistente.get(i).getId());
+                //cantidadDeAlumnos+=inscripcionRepository.countByCurso(cursoExistente.get(i).getId());
+                // countAlumnos(cursoExistente.get(i).getId());
 
 
             }
 
         }
 
+
         System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
         System.out.println("\ncantidadDeAlumnos = " + cantidadDeAlumnos);
+        System.out.print("-------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
+
+
+    }
+
+    public void jovenes(JovenesDTO jovenes) {
+
+        List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
+        //Integer horasSemanalesTotales = 0;
+        //Integer cantidadDeAlumnos = 0;
+
+        System.out.print("-------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
+
+        for ( int i=0; i<inscripcionExistente.size(); i++) {
+
+            if(jovenes.getCurso()==inscripcionExistente.get(i).getIdCurso())
+            {
+                System.out.println("Id: "+ inscripcionExistente.get(i).getIdAlumno());
+                Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno());
+                System.out.println(alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno()));
+
+                System.out.println("Nombre: "+ alumnoExistente);
+
+            }
+
+
+
+                //cantidadDeAlumnos+=inscripcionRepository.countByCurso(cursoExistente.get(i).getId());
+                // countAlumnos(cursoExistente.get(i).getId());
+
+
+            }
+
+
+
+
+        //System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
+        //System.out.println("\ncantidadDeAlumnos = " + cantidadDeAlumnos);
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 

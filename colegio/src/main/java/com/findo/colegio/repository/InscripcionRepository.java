@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface InscripcionRepository extends MongoRepository<Inscripcion, String> {
 
-    //int countByCurso(boolean aux);
+    //Integer countByCurso(int idCurso);
     Optional<Inscripcion> findById(int id);
 }
