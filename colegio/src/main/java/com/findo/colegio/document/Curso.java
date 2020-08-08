@@ -1,0 +1,27 @@
+package com.findo.colegio.document;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Curso {
+    @Id
+    private Integer id;
+    private String nombre;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
+    private int horasSemanales;
+
+    public int getId() { return id; }
+    public String getNombre() { return nombre; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public int getHorasSemanales() { return horasSemanales; }
+
+}
