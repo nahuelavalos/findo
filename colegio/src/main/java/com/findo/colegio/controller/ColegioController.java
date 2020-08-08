@@ -3,6 +3,8 @@ package com.findo.colegio.controller;
 
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
+import com.findo.colegio.service.ColegioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ public class ColegioController {
         try {
             if(isAlumno(alumno))
             {
+                colegioService.saveDna(true,alumno);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
@@ -48,8 +51,8 @@ public class ColegioController {
         }
     }
 
-
-
+    @Autowired
+    ColegioService colegioService;
 
 }
 

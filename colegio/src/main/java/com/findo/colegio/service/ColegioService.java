@@ -2,7 +2,14 @@ package com.findo.colegio.service;
 
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
+import com.findo.colegio.repository.AlumnoRepository;
+import com.mongodb.client.MongoClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ColegioService {
@@ -70,6 +77,35 @@ public class ColegioService {
             return true;
         }
 
+    }
+/*
+    @Bean
+    public MongoTemplate mongoTemplate() throws Exception {
+        return new MongoTemplate(mongo(), "test");
+    }
+
+    @Bean
+    public MongoClient mongo() {
+        return new MongoClient("localhost");
+    }
+
+    */
+    @Autowired
+    AlumnoRepository alumnoRepository;
+
+
+
+    public void saveDna(boolean isAlumno, Alumno alumno) {
+       // Alumno alumno = new Alumno();
+        //alumno.setMutante(isMutant);
+        //alumno.setDna(dna.getDna());
+        Optional<Alumno> alumnoExistente = alumnoRepository.findById(alumno.getId());
+        if (!alumnoExistente.isPresent()) {
+            alumnoRepository.save(alumno);
+        }
+        else {
+            System.out.println("ADN DUPLICADO");
+        }
     }
 
 }
