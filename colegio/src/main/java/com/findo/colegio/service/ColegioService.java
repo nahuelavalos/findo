@@ -2,8 +2,10 @@ package com.findo.colegio.service;
 
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
+import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
+import com.findo.colegio.repository.InscripcionRepository;
 import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -67,15 +69,35 @@ public class ColegioService {
                 )
         {
             System.out.println("Curso ERROR");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
             return false;
         }
         else
         {
             System.out.println("Curso OK");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
+            return true;
+        }
+
+    }
+
+    public static boolean isInscripcion(Inscripcion inscripcion) {
+
+        System.out.print("-------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
+
+        System.out.print("\"id\":\""+inscripcion.getId()+"\",");
+        System.out.print("\"idAlumno\":\""+inscripcion.getIdAlumno()+"\",");
+        System.out.println("\"idCurso\":\""+inscripcion.getIdCurso()+"\",");
+
+        if(inscripcion.getId()<=0 || inscripcion.getId()>99999999 ||
+                inscripcion.getIdAlumno()<=0 || inscripcion.getIdAlumno()>99999999 ||
+                inscripcion.getIdCurso()<=0 || inscripcion.getIdCurso()>99999999 )
+        {
+            System.out.println("Inscripcion ERROR");
+            return false;
+        }
+        else
+        {
+            System.out.println("Inscripcion OK");
             return true;
         }
 
@@ -92,6 +114,8 @@ public class ColegioService {
         }
         else {
             System.out.println("Alumno existente");
+            System.out.print("-------------------------------------------------------");
+            System.out.println("-----------------------------------------------------");
             return false;
         }
     }
@@ -107,6 +131,25 @@ public class ColegioService {
         }
         else {
             System.out.println("Curso Existente");
+            System.out.print("-------------------------------------------------------");
+            System.out.println("-----------------------------------------------------");
+            return false;
+        }
+    }
+
+    @Autowired
+    InscripcionRepository inscripcionRepository;
+
+    public boolean crearInscripcion(Inscripcion inscripcion) {
+        Optional<Inscripcion> inscripcionExistente = inscripcionRepository.findById(inscripcion.getId());
+        if (!inscripcionExistente.isPresent()) {
+            inscripcionRepository.save(inscripcion);
+            return true;
+        }
+        else {
+            System.out.println("Inscripcion Existente");
+            System.out.print("-------------------------------------------------------");
+            System.out.println("-----------------------------------------------------");
             return false;
         }
     }

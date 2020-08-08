@@ -3,6 +3,7 @@ package com.findo.colegio.controller;
 
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
+import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.service.ColegioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.findo.colegio.service.ColegioService.isAlumno;
-import static com.findo.colegio.service.ColegioService.isCurso;
+import static com.findo.colegio.service.ColegioService.*;
 
 @RestController
 public class ColegioController {
@@ -38,6 +38,22 @@ public class ColegioController {
     public ResponseEntity<?> esCurso(@RequestBody Curso curso) {
         try {
             if(isCurso(curso) && colegioService.crearCurso(curso))
+            {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.toString());
+        }
+    }
+
+    @PostMapping(value = "/inscripcion", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> esInscripcion(@RequestBody Inscripcion inscripcion) {
+        try {
+            if(isInscripcion(inscripcion) && colegioService.crearInscripcion(inscripcion))
             {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
