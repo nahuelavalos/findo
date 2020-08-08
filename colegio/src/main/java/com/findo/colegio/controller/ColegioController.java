@@ -21,9 +21,8 @@ public class ColegioController {
     @PostMapping(value = "/alumno", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esAlumno(@RequestBody Alumno alumno) {
         try {
-            if(isAlumno(alumno))
+            if(isAlumno(alumno) && colegioService.crearAlumno(alumno))
             {
-                colegioService.saveDna(true,alumno);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
@@ -38,7 +37,7 @@ public class ColegioController {
     @PostMapping(value = "/curso", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esCurso(@RequestBody Curso curso) {
         try {
-            if(isCurso(curso))
+            if(isCurso(curso) && colegioService.crearCurso(curso))
             {
                 return new ResponseEntity<>(HttpStatus.OK);
             }

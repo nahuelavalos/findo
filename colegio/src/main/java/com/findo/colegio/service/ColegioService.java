@@ -3,12 +3,14 @@ package com.findo.colegio.service;
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.repository.AlumnoRepository;
+import com.findo.colegio.repository.CursoRepository;
 import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -61,7 +63,7 @@ public class ColegioService {
         if(curso.getId()<=0 || curso.getId()>99999999 ||
                 curso.getNombre().isEmpty() || curso.getNombre().length()>20 ||
                 curso.getHorasSemanales()<=0 || curso.getHorasSemanales()>20 ||
-                curso.getFechaFin().isBefore(curso.getFechaInicio())
+                curso.getFechaInicio().isBefore(LocalDate.now()) || curso.getFechaFin().isBefore(curso.getFechaInicio())
                 )
         {
             System.out.println("Curso ERROR");
@@ -78,33 +80,34 @@ public class ColegioService {
         }
 
     }
-/*
-    @Bean
-    public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(mongo(), "test");
-    }
 
-    @Bean
-    public MongoClient mongo() {
-        return new MongoClient("localhost");
-    }
-
-    */
     @Autowired
     AlumnoRepository alumnoRepository;
 
-
-
-    public void saveDna(boolean isAlumno, Alumno alumno) {
-       // Alumno alumno = new Alumno();
-        //alumno.setMutante(isMutant);
-        //alumno.setDna(dna.getDna());
+    public boolean crearAlumno(Alumno alumno) {
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(alumno.getId());
         if (!alumnoExistente.isPresent()) {
             alumnoRepository.save(alumno);
+            return true;
         }
         else {
-            System.out.println("ADN DUPLICADO");
+            System.out.println("Alumno existente");
+            return false;
+        }
+    }
+
+    @Autowired
+    CursoRepository cursoRepository;
+
+    public boolean crearCurso(Curso curso) {
+        Optional<Curso> cursoExistente = cursoRepository.findById(curso.getId());
+        if (!cursoExistente.isPresent()) {
+            cursoRepository.save(curso);
+            return true;
+        }
+        else {
+            System.out.println("Curso Existente");
+            return false;
         }
     }
 
