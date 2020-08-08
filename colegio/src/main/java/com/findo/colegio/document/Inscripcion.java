@@ -20,8 +20,8 @@ public class Inscripcion {
     private Integer idCurso;
 
 
-    public int getId() { return id; }
-    public int getIdAlumno() { return idAlumno; }
-    public int getIdCurso() { return idCurso; }
+    public Integer getId() { return id; }
+    public Integer getIdAlumno() { return idAlumno; }
+    public Integer getIdCurso() { return idCurso; }
 
 }

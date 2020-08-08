@@ -3,6 +3,7 @@ package com.findo.colegio.service;
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
+import com.findo.colegio.dto.FechaDTO;
 import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
 import com.findo.colegio.repository.InscripcionRepository;
@@ -13,6 +14,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -152,6 +155,43 @@ public class ColegioService {
             System.out.println("-----------------------------------------------------");
             return false;
         }
+    }
+
+   // public int countAlumnos(Integer idCurso) {
+    //    return inscripcionRepository.countByCurso(true);}
+
+    public void horasSemanalesTotales(FechaDTO fecha) {
+
+        List<Curso> cursoExistente = cursoRepository.findAll();
+        int horasSemanalesTotales = 0;
+        int cantidadDeAlumnos = 0;
+
+        System.out.print("-------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
+
+        for ( int i=0; i<cursoExistente.size(); i++) {
+            if(fecha.getFecha().isBefore(cursoExistente.get(i).getFechaInicio()) ||
+                    fecha.getFecha().isAfter(cursoExistente.get(i).getFechaFin())){
+
+            }
+            else{
+                horasSemanalesTotales+=cursoExistente.get(i).getHorasSemanales();
+                System.out.println("Nombre: "+ cursoExistente.get(i).getNombre());
+
+
+                //cantidadDeAlumnos+=countAlumnos(cursoExistente.get(i).getId());
+
+
+            }
+
+        }
+
+        System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
+        System.out.println("\ncantidadDeAlumnos = " + cantidadDeAlumnos);
+        System.out.print("-------------------------------------------------------");
+        System.out.println("-----------------------------------------------------");
+
+
     }
 
 }

@@ -21,10 +21,10 @@ public class Curso {
     private LocalDate fechaFin;
     private int horasSemanales;
 
-    public int getId() { return id; }
+    public Integer getId() { return id; }
     public String getNombre() { return nombre; }
     public LocalDate getFechaInicio() { return fechaInicio; }
     public LocalDate getFechaFin() { return fechaFin; }
-    public int getHorasSemanales() { return horasSemanales; }
+    public Integer getHorasSemanales() { return horasSemanales; }
 
 }

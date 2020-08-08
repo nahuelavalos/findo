@@ -21,7 +21,7 @@ public class Alumno {
     private String libreta;
     private LocalDate fechaNacimiento;
 
-    public int getId() { return id; }
+    public Integer getId() { return id; }
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getLibreta() { return libreta; }
