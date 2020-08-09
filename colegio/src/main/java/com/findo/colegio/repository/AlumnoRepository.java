@@ -7,7 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface AlumnoRepository extends MongoRepository<Alumno, String> {
-
     Optional<Alumno> findById(int id);
-
 }

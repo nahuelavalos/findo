@@ -1,6 +1,7 @@
 package com.findo.colegio.dto;
 
 public class JovenesDTO {
+
     private Integer curso;
     private Integer cantidad;
 

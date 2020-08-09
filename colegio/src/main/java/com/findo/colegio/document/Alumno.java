@@ -15,11 +15,12 @@ public class Alumno {
     private LocalDate fechaNacimiento;
 
     public Integer getId() { return id; }
-    public void setId(Integer id){this.id=id;};
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getLibreta() { return libreta; }
     public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+
+    public void setId(Integer id) { this.id = id; }
 }
 
 

@@ -199,14 +199,19 @@ public class ColegioService {
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
         Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
+        //Establece el LUNES como inicio de la SEMANA
+        //Elegi FRANCIA porque es un estandar utilizado en la mayoria de los paises de Europa
+        WeekFields weekFields = WeekFields.of(Locale.FRANCE);
+
+        //Variables auxiliares para definir semana de INICIO y FIN a cada Curso Existente
         String auxInf = "";
         String auxSup = "";
 
-        int[] horas = new int[999999];
+        //Array utilizado para sumar el total de horas de cada Alumno por semana del anio
+        final int SEMANA_ANIO=999999;
+        int[] horas = new int[SEMANA_ANIO];
 
-        //Establece el LUNES como inicio de la SEMANA
-        WeekFields weekFields = WeekFields.of(Locale.FRANCE);
-
+        //Inicializacion de variables
         auxInf = String.valueOf(cursoExistente.get().getFechaInicio().getYear());
         auxInf += String.valueOf(cursoExistente.get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
 
@@ -216,6 +221,7 @@ public class ColegioService {
         System.out.print("Curso: " + auxInf);
         System.out.println(" - " + auxSup);
 
+        //Inicializacion del array
         for(int i=0; i<horas.length; i++)
         {
             if(i>=Integer.parseInt(auxInf) && i<=Integer.parseInt(auxSup)) {
@@ -224,9 +230,6 @@ public class ColegioService {
                 System.out.println("Horas="+horas[i]);
             }
         }
-
-
-        int acum=0;
 
         for ( int i=0; i<inscripciones.size(); i++) {
             if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
@@ -239,6 +242,7 @@ public class ColegioService {
                     System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear()+" -> ");
                     System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
+                    //Seteo las variables auxiliares con la semana de INICIO y FIN de cada Curso en el que el alumno fue inscripto
                     auxInf = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear());
                     auxInf += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
 
@@ -248,6 +252,7 @@ public class ColegioService {
                     System.out.println(auxInf);
                     System.out.println(auxSup);
 
+                    //Logica de Negocio para cuando el Curso dura solo una semana
                     if(Integer.parseInt(auxInf)==Integer.parseInt(auxSup)) {
                         horas[Integer.parseInt(auxInf)]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
                         System.out.println("actual"+Integer.parseInt(auxInf));
@@ -255,13 +260,15 @@ public class ColegioService {
                             System.out.println("1 - Paso las 20 horas semanales");
                             return false;}
                     }
+                    //Logica de Negocio para cuando el Curso dura mas de una semana
                     else {
                         for(int j=Integer.parseInt(auxInf); j<=Integer.parseInt(auxSup);j++) {
                                 horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
                                 System.out.println(horas[j]);
                                 if(horas[j]>20){
                                     System.out.println("2 - Paso las 20 horas semanales");
-                                    return false;}
+                                    return false;
+                                }
                             }
                     }
 
@@ -273,6 +280,7 @@ public class ColegioService {
                 }
             }
 
+        //Procesar Inscripción
         inscripcionRepository.save(inscripcion);
         return true;
     }
@@ -284,42 +292,59 @@ public class ColegioService {
 
         Integer horasSemanalesTotales = 0;
         Integer cantidadDeAlumnos = 0;
+        long edadDeAlumnosPromedio = 0;
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
-        long[][] stats = new long[inscripciones.size()][2];
+        //Array para almacenar id de alumnos inscriptos utilizado para evitar repetidos
+        Integer[] alumnosInscriptos = new Integer[inscripciones.size()];
+        //Array para almacenar Edades
+        long[] edades = new long[inscripciones.size()];
 
+        //JSON Response
+        String response;
+
+        //Busco los cursos vigentes
         for ( int i=0; i<cursos.size(); i++) {
             if(fecha.getFecha().isBefore(cursos.get(i).getFechaInicio()) ||
                     fecha.getFecha().isAfter(cursos.get(i).getFechaFin())){
-
+                    //"Curso no vigente"
             }
             else {
+                //Acumulo las horas semanales de los cursos vigentes
                 horasSemanalesTotales+=cursos.get(i).getHorasSemanales();
                 System.out.println("Nombre: "+ cursos.get(i).getNombre());
 
+                //Busco los alumnos inscriptos a los cursos vigentes
                 for ( int j=0; j<inscripciones.size(); j++) {
                     System.out.println(cursos.get(i).getId());
                     System.out.println(inscripciones.get(j).getIdCurso());
 
                     if(cursos.get(i).getId()==inscripciones.get(j).getIdCurso()) {
-                        boolean flag = false;
-                        int cant = 0;
 
+                        boolean alumnoRepetido = false;
+
+                        //Evito que haya alumnos repetidos por haberse inscripto a mas de un curso vigente
                         Optional<Alumno> alumno = alumnoRepository.findById(inscripciones.get(j).getIdAlumno());
                         for(int k=0; k<inscripciones.size(); k++) {
-                            if(stats[k][0]==alumno.get().getId()){
-                                flag = true;
+                            //if(stats[k][0]==alumno.get().getId())
+                                if(alumnosInscriptos[k]==alumno.get().getId())
+                            {
+                                alumnoRepetido = true;
                             }
                         }
                         System.out.println("IdAlumno"+inscripciones.get(j).getIdAlumno());
-                        if(!flag){
-                            stats[cantidadDeAlumnos][0]=alumno.get().getId();
-                            stats[cantidadDeAlumnos][1]=ChronoUnit.YEARS.between(alumno.get().getFechaNacimiento(), LocalDate.now());
+
+                        //Almaceno las edades de todos los alumnos inscriptos al menos a un curso vigente
+                        if(!alumnoRepetido){
+                            alumnosInscriptos[cantidadDeAlumnos]=alumno.get().getId();
+                            edades[cantidadDeAlumnos]=ChronoUnit.YEARS.between(alumno.get().getFechaNacimiento(), LocalDate.now());
+
                             cantidadDeAlumnos++;
                         };
-                        flag = false;
+
+                        alumnoRepetido = false;
                     }
 
                 }
@@ -328,29 +353,28 @@ public class ColegioService {
 
         }
 
-        long prom = 0;
-
-        for(int i=0; i<cantidadDeAlumnos; i++)
-        {
-            prom+=stats[i][1];
-
+        //Sumo todas las edades almacenadas
+        for(int i=0; i<cantidadDeAlumnos; i++) {
+            edadDeAlumnosPromedio+=edades[i];
         }
-        if(prom>0) {
-            prom /= cantidadDeAlumnos;
+
+        //Saco el promedio de todas las edades almacenadas
+        if(edadDeAlumnosPromedio>0) {
+            edadDeAlumnosPromedio /= cantidadDeAlumnos;
         }
 
         System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
         System.out.println("cantidadDeAlumnos = " + cantidadDeAlumnos);
-        System.out.println("edadDeAlumnosPromedio = " + prom);
+        System.out.println("edadDeAlumnosPromedio = " + edadDeAlumnosPromedio);
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
-        String salida = "{\"horasSemanalesTotales\":\""+horasSemanalesTotales+"\","+
+        //Armo el JSON Response
+         response = "{\"horasSemanalesTotales\":\""+horasSemanalesTotales+"\","+
                         "\"cantidadDeAlumnos\":\""+cantidadDeAlumnos+"\"," +
-                        "\"edadDeAlumnosPromedio\":\""+prom+"\"}";
+                        "\"edadDeAlumnosPromedio\":\""+edadDeAlumnosPromedio+"\"}";
 
-        return salida;
-
+        return response;
     }
 
     public boolean cursoExistente(JovenesDTO jovenes) {
