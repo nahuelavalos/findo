@@ -4,9 +4,9 @@ package com.findo.colegio.controller;
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
-import com.findo.colegio.dto.CursosActivosDTO;
 import com.findo.colegio.dto.FechaDTO;
-import com.findo.colegio.dto.JovenesDTO;
+import com.findo.colegio.dto.JovenesRequestDTO;
+import com.findo.colegio.dto.JovenesResponseDTO;
 import com.findo.colegio.service.ColegioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
 
 import static com.findo.colegio.service.ColegioService.*;
 
@@ -86,11 +84,11 @@ public class ColegioController {
     }
 
     @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getStats(@RequestBody JovenesDTO jovenes) {
-        //CursosActivosDTO cursosActivos = new CursosActivosDTO(colegioService.countHumans(), colegioService.countMutants());
-        colegioService.jovenes(jovenes);
-        return new ResponseEntity<>(HttpStatus.OK);
-        //return ResponseEntity.status(HttpStatus.OK).body(cursosActivos);
+    public ResponseEntity<?> getStats(@RequestBody JovenesRequestDTO jovenes) {
+        //JovenesResponseDTO jvn = new JovenesRequestDTO();
+        //JovenesResponseDTO jvn = ;
+        //return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
     }
 
     @Autowired

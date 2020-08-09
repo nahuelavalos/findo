@@ -4,18 +4,17 @@ import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.dto.FechaDTO;
-import com.findo.colegio.dto.JovenesDTO;
+import com.findo.colegio.dto.JovenesRequestDTO;
 import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
 import com.findo.colegio.repository.InscripcionRepository;
-import com.mongodb.client.MongoClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -200,11 +199,16 @@ public class ColegioService {
 
     }
 
-    public void jovenes(JovenesDTO jovenes) {
+    public String[][] jovenes(JovenesRequestDTO jovenes) {
 
         List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
         //Integer horasSemanalesTotales = 0;
         //Integer cantidadDeAlumnos = 0;
+        String[][] alumnosOrdenados = new String[(int)alumnoRepository.count()][6];
+        int x=0;
+        //List <Optional<Alumno>> listaAlumnos = new List<Optional<Alumno>>() ;
+        //ArrayList <Optional<Alumno>> listaAlumnos = new ArrayList<Optional<Alumno>>() ;
+
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
@@ -213,21 +217,86 @@ public class ColegioService {
 
             if(jovenes.getCurso()==inscripcionExistente.get(i).getIdCurso())
             {
-                System.out.println("Id: "+ inscripcionExistente.get(i).getIdAlumno());
+                //System.out.println("Id: "+ inscripcionExistente.get(i).getIdAlumno());
                 Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno());
-                System.out.println(alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno()));
 
-                System.out.println("Nombre: "+ alumnoExistente);
+                //listaAlumnos.add(alumnoExistente);
+                //listaAlumnos.sort(alumnoExistente.);
+                //System.out.println(alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno()));
 
+                //System.out.println("Nombre: "+ alumnoExistente.get().getNombre());
+
+                for(int y=0; y<6; y++)
+                {
+                    alumnosOrdenados[x][0]=""+alumnoExistente.get().getId()+"";
+                    alumnosOrdenados[x][1]=""+alumnoExistente.get().getNombre()+"";
+                    alumnosOrdenados[x][2]=""+alumnoExistente.get().getApellido()+"";
+                    alumnosOrdenados[x][3]=""+alumnoExistente.get().getLibreta()+"";
+                    alumnosOrdenados[x][4]=""+alumnoExistente.get().getFechaNacimiento()+"";
+                    alumnosOrdenados[x][5]=""+ChronoUnit.YEARS.between(alumnoExistente.get().getFechaNacimiento(), LocalDate.now())+"";
+                }
+
+                System.out.println("[\"id\":\""+alumnosOrdenados[x][0]+"\"," +
+                "\"nombre\":\""+alumnosOrdenados[x][1]+"\"," +
+                "\"apellido\":\""+alumnosOrdenados[x][2]+"\"," +
+                "\"libreta\":\""+alumnosOrdenados[x][3]+"\"," +
+                "\"fechaNacimiento\":\""+alumnosOrdenados[x][4]+"\"," +
+                "\"edad\":\""+alumnosOrdenados[x][5]+"\"]");
+
+                x++;
             }
 
 
-
-                //cantidadDeAlumnos+=inscripcionRepository.countByCurso(cursoExistente.get(i).getId());
-                // countAlumnos(cursoExistente.get(i).getId());
+        }
 
 
+        for(int i=0; i<x-1; i++)
+        {
+            for(int j=0; j<x-1; j++) {
+
+                String[] aux = new String[6];
+
+                //System.out.println(alumnosOrdenados[i][4].substring(0,10));
+                //System.out.println(alumnosOrdenados[i+1][4].substring(0,10));
+
+                if (LocalDate.parse(alumnosOrdenados[j][4].substring(0, 10)).isBefore(LocalDate.parse(alumnosOrdenados[j + 1][4].substring(0, 10)))) {
+                    System.out.println(alumnosOrdenados[j][1] + " X " + alumnosOrdenados[j + 1][1]);
+                    aux[0] = alumnosOrdenados[j][0];
+                    aux[1] = alumnosOrdenados[j][1];
+                    aux[2] = alumnosOrdenados[j][2];
+                    aux[3] = alumnosOrdenados[j][3];
+                    aux[4] = alumnosOrdenados[j][4];
+                    aux[5] = alumnosOrdenados[j][5];
+                    alumnosOrdenados[j][0] = alumnosOrdenados[j + 1][0];
+                    alumnosOrdenados[j][1] = alumnosOrdenados[j + 1][1];
+                    alumnosOrdenados[j][2] = alumnosOrdenados[j + 1][2];
+                    alumnosOrdenados[j][3] = alumnosOrdenados[j + 1][3];
+                    alumnosOrdenados[j][4] = alumnosOrdenados[j + 1][4];
+                    alumnosOrdenados[j][5] = alumnosOrdenados[j + 1][5];
+                    alumnosOrdenados[j + 1][0] = aux[0];
+                    alumnosOrdenados[j + 1][1] = aux[1];
+                    alumnosOrdenados[j + 1][2] = aux[2];
+                    alumnosOrdenados[j + 1][3] = aux[3];
+                    alumnosOrdenados[j + 1][4] = aux[4];
+                    alumnosOrdenados[j + 1][5] = aux[5];
+
+                }
             }
+        }
+
+        /*
+        String resp = "{";
+        for(int i=0; i<jovenes.getCantidad(); i++){
+            resp+=alumnosOrdenados[i][0];
+            resp+=alumnosOrdenados[i][1];
+            resp+=alumnosOrdenados[i][2];
+            resp+=alumnosOrdenados[i][3];
+            resp+=alumnosOrdenados[i][4];
+            resp+=alumnosOrdenados[i][5];
+        }
+
+         */
+
 
 
 
@@ -237,7 +306,7 @@ public class ColegioService {
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
-
+        return alumnosOrdenados;
     }
 
 }
