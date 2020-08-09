@@ -1,5 +1,6 @@
 package com.findo.colegio.service;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
@@ -13,10 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.WeekFields;
+import java.util.*;
 
 @Service
 public class ColegioService {
@@ -82,7 +81,11 @@ public class ColegioService {
 
     }
 
-    public static boolean isInscripcion(Inscripcion inscripcion) {
+    public boolean isInscripcion(Inscripcion inscripcion) {
+
+        Optional<Inscripcion> inscripcionExistente = inscripcionRepository.findById(inscripcion.getId());
+        Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
+        Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
@@ -91,17 +94,20 @@ public class ColegioService {
         System.out.print("\"idAlumno\":\""+inscripcion.getIdAlumno()+"\",");
         System.out.println("\"idCurso\":\""+inscripcion.getIdCurso()+"\",");
 
-        if(inscripcion.getId()<=0 || inscripcion.getId()>99999999 ||
-                inscripcion.getIdAlumno()<=0 || inscripcion.getIdAlumno()>99999999 ||
-                inscripcion.getIdCurso()<=0 || inscripcion.getIdCurso()>99999999 )
-        {
-            System.out.println("Inscripcion ERROR");
-            return false;
+
+        if(!inscripcionExistente.isPresent() && alumnoExistente.isPresent() && cursoExistente.isPresent()) {
+            if (inscripcion.getId() <= 0 || inscripcion.getId() > 99999999 ||
+                    inscripcion.getIdAlumno() <= 0 || inscripcion.getIdAlumno() > 99999999 ||
+                    inscripcion.getIdCurso() <= 0 || inscripcion.getIdCurso() > 99999999) {
+                System.out.println("Inscripcion ERROR");
+                return false;
+            } else {
+                System.out.println("Inscripcion OK");
+                return true;
+            }
         }
-        else
-        {
-            System.out.println("Inscripcion OK");
-            return true;
+        else{
+            return false;
         }
 
     }
@@ -144,24 +150,79 @@ public class ColegioService {
     InscripcionRepository inscripcionRepository;
 
     public boolean crearInscripcion(Inscripcion inscripcion) {
+        //NUEVO
+        List<Inscripcion> inscripciones = inscripcionRepository.findAll();
+        //NUEVO
+
         Optional<Inscripcion> inscripcionExistente = inscripcionRepository.findById(inscripcion.getId());
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
         Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
-        if (!inscripcionExistente.isPresent() && alumnoExistente.isPresent() && cursoExistente.isPresent()) {
+        int[] horas = new int[9999];
+
+        for(int i=0; i<horas.length; i++)
+        {
+            horas[i]=cursoExistente.get().getHorasSemanales();
+        }
+
+        String auxInf = "";
+        String auxSup = "";
+        int acum=0;
+        //boolean flag=true;
+
+
+
+            WeekFields weekFields = WeekFields.of(Locale.FRANCE);
+            //NUEVO
+            for ( int i=0; i<inscripciones.size(); i++) {
+                if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
+                    if(inscripciones.get(i).getIdCurso()==cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getId()){
+                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getNombre());
+                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio()+" -> ");
+                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear()+" -> ");
+                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
+                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin()+" -> ");
+                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear()+" -> ");
+                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
+
+                        auxInf = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear());
+                        auxInf += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
+
+                        auxSup = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear());
+                        auxSup += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
+
+                        System.out.println(auxInf);
+                        System.out.println(auxSup);
+
+                        for(int j=0; j<Integer.parseInt(auxSup)-Integer.parseInt(auxInf);j++)
+                        {
+                            horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
+                            System.out.println(horas[j]);
+                            if(horas[j]>20){
+                                System.out.println("Paso las 20 horas semanales");
+                                return false;}
+                        }
+
+                        //horas[0]= Integer.parseInt(auxInf);
+                        //horas[0]= cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
+                        //System.out.println(horas[0]);
+                        //System.out.println(horas[0]);
+
+                    }
+                }
+            }
+            //NUEVO
+
             inscripcionRepository.save(inscripcion);
             return true;
-        }
-        else {
-            System.out.println("Inscripcion Existente o Alumno/Curso Inexistente");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
-            return false;
-        }
+
     }
 
    // public int countAlumnos(Integer idCurso) {
     //    return inscripcionRepository.countByCurso(true);}
+
+
+
 
     public String fecha(FechaDTO fecha) {
 
@@ -242,6 +303,22 @@ public class ColegioService {
         return salida;
 
     }
+
+    public boolean cursoExistente(JovenesRequestDTO jovenes) {
+
+        Optional<Curso> cursoExistente = cursoRepository.findById(jovenes.getCurso());
+        List<Inscripcion> inscripciones = inscripcionRepository.findAll();
+
+        if (cursoExistente.isPresent()) {
+            for (int i = 0; i < inscripciones.size(); i++) {
+                if (cursoExistente.get().getId() == inscripciones.get(i).getIdCurso()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     public String jovenes(JovenesRequestDTO jovenes) {
 

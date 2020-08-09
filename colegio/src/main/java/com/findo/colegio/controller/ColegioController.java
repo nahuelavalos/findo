@@ -25,8 +25,7 @@ public class ColegioController {
     @PostMapping(value = "/alumno", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esAlumno(@RequestBody Alumno alumno) {
         try {
-            if(isAlumno(alumno) && colegioService.crearAlumno(alumno))
-            {
+            if(isAlumno(alumno) && colegioService.crearAlumno(alumno)) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
@@ -41,8 +40,7 @@ public class ColegioController {
     @PostMapping(value = "/curso", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esCurso(@RequestBody Curso curso) {
         try {
-            if(isCurso(curso) && colegioService.crearCurso(curso))
-            {
+            if(isCurso(curso) && colegioService.crearCurso(curso)) {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
@@ -57,17 +55,16 @@ public class ColegioController {
     @PostMapping(value = "/inscripcion", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> esInscripcion(@RequestBody Inscripcion inscripcion) {
         try {
-            if(isInscripcion(inscripcion))
-            {
+            if(colegioService.isInscripcion(inscripcion)) {
                 if(colegioService.crearInscripcion(inscripcion)) {
                     return new ResponseEntity<>(HttpStatus.OK);
                 }
-                else{
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
             }
             else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception ex) {
@@ -77,18 +74,18 @@ public class ColegioController {
 
     @GetMapping(value = "/fecha", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats(@RequestBody FechaDTO fecha) {
-        //CursosActivosDTO cursosActivos = new CursosActivosDTO(colegioService.countHumans(), colegioService.countMutants());
-
-        //return new ResponseEntity<>(HttpStatus.OK).body(colegioService.fecha(fecha);
         return ResponseEntity.status(HttpStatus.OK).body(colegioService.fecha(fecha));
     }
 
     @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats(@RequestBody JovenesRequestDTO jovenes) {
-        //JovenesResponseDTO jvn = new JovenesRequestDTO();
-        //JovenesResponseDTO jvn = ;
-        //return new ResponseEntity<>(HttpStatus.OK);
-        return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
+        if(colegioService.cursoExistente(jovenes)){
+            return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @Autowired
