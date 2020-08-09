@@ -163,23 +163,54 @@ public class ColegioService {
    // public int countAlumnos(Integer idCurso) {
     //    return inscripcionRepository.countByCurso(true);}
 
-    public void horasSemanalesTotales(FechaDTO fecha) {
+    public String fecha(FechaDTO fecha) {
 
-        List<Curso> cursoExistente = cursoRepository.findAll();
+        List<Curso> cursos = cursoRepository.findAll();
+        List<Inscripcion> inscripciones = inscripcionRepository.findAll();
+        //List<Alumno> alumnos = alumnoRepository.findAll();
+
         Integer horasSemanalesTotales = 0;
         Integer cantidadDeAlumnos = 0;
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
-        for ( int i=0; i<cursoExistente.size(); i++) {
-            if(fecha.getFecha().isBefore(cursoExistente.get(i).getFechaInicio()) ||
-                    fecha.getFecha().isAfter(cursoExistente.get(i).getFechaFin())){
+        long[][] stats = new long[inscripciones.size()][2];
+
+        for ( int i=0; i<cursos.size(); i++) {
+            if(fecha.getFecha().isBefore(cursos.get(i).getFechaInicio()) ||
+                    fecha.getFecha().isAfter(cursos.get(i).getFechaFin())){
 
             }
             else{
-                horasSemanalesTotales+=cursoExistente.get(i).getHorasSemanales();
-                System.out.println("Nombre: "+ cursoExistente.get(i).getNombre());
+                horasSemanalesTotales+=cursos.get(i).getHorasSemanales();
+                System.out.println("Nombre: "+ cursos.get(i).getNombre());
+
+                for ( int j=0; j<inscripciones.size(); j++)
+                {
+                    System.out.println(cursos.get(i).getId());
+                    System.out.println(inscripciones.get(j).getIdCurso());
+                    if(cursos.get(i).getId()==inscripciones.get(j).getIdCurso())
+                    {
+                        boolean flag = false;
+                        int cant = 0;
+
+                        Optional<Alumno> alumno = alumnoRepository.findById(inscripciones.get(j).getIdAlumno());
+                        for(int k=0; k<inscripciones.size(); k++) {
+                            if(stats[k][0]==alumno.get().getId()){
+                                flag = true;
+                            }
+                        }
+                        System.out.println("IdAlumno"+inscripciones.get(j).getIdAlumno());
+                        if(!flag){
+                            stats[cantidadDeAlumnos][0]=alumno.get().getId();
+                            stats[cantidadDeAlumnos][1]=ChronoUnit.YEARS.between(alumno.get().getFechaNacimiento(), LocalDate.now());
+                            cantidadDeAlumnos++;
+                        };
+                        flag = false;
+                    }
+
+                }
 
 
                 //cantidadDeAlumnos+=inscripcionRepository.countByCurso(cursoExistente.get(i).getId());
@@ -189,13 +220,26 @@ public class ColegioService {
             }
 
         }
+        long prom = 0;
 
+        for(int i=0; i<cantidadDeAlumnos; i++)
+        {
+            prom+=stats[i][1];
+
+        }
+        prom/=cantidadDeAlumnos;
 
         System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
-        System.out.println("\ncantidadDeAlumnos = " + cantidadDeAlumnos);
+        System.out.println("cantidadDeAlumnos = " + cantidadDeAlumnos);
+        System.out.println("edadDeAlumnosPromedio = " + prom);
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
+        String salida = "{\"horasSemanalesTotales\":\""+horasSemanalesTotales+"\","+
+                        "\"cantidadDeAlumnos\":\""+cantidadDeAlumnos+"\"," +
+                        "\"edadDeAlumnosPromedio\":\""+prom+"\"}";
+
+        return salida;
 
     }
 

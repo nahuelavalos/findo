@@ -78,9 +78,9 @@ public class ColegioController {
     @GetMapping(value = "/fecha", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats(@RequestBody FechaDTO fecha) {
         //CursosActivosDTO cursosActivos = new CursosActivosDTO(colegioService.countHumans(), colegioService.countMutants());
-        colegioService.horasSemanalesTotales(fecha);
-        return new ResponseEntity<>(HttpStatus.OK);
-        //return ResponseEntity.status(HttpStatus.OK).body(cursosActivos);
+
+        //return new ResponseEntity<>(HttpStatus.OK).body(colegioService.fecha(fecha);
+        return ResponseEntity.status(HttpStatus.OK).body(colegioService.fecha(fecha));
     }
 
     @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
