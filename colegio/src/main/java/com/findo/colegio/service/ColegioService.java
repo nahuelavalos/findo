@@ -199,16 +199,12 @@ public class ColegioService {
 
     }
 
-    public String[][] jovenes(JovenesRequestDTO jovenes) {
+    public String jovenes(JovenesRequestDTO jovenes) {
 
         List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
-        //Integer horasSemanalesTotales = 0;
-        //Integer cantidadDeAlumnos = 0;
+
         String[][] alumnosOrdenados = new String[(int)alumnoRepository.count()][6];
         int x=0;
-        //List <Optional<Alumno>> listaAlumnos = new List<Optional<Alumno>>() ;
-        //ArrayList <Optional<Alumno>> listaAlumnos = new ArrayList<Optional<Alumno>>() ;
-
 
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
@@ -217,14 +213,7 @@ public class ColegioService {
 
             if(jovenes.getCurso()==inscripcionExistente.get(i).getIdCurso())
             {
-                //System.out.println("Id: "+ inscripcionExistente.get(i).getIdAlumno());
                 Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno());
-
-                //listaAlumnos.add(alumnoExistente);
-                //listaAlumnos.sort(alumnoExistente.);
-                //System.out.println(alumnoRepository.findById(inscripcionExistente.get(i).getIdAlumno()));
-
-                //System.out.println("Nombre: "+ alumnoExistente.get().getNombre());
 
                 for(int y=0; y<6; y++)
                 {
@@ -245,8 +234,6 @@ public class ColegioService {
 
                 x++;
             }
-
-
         }
 
 
@@ -255,9 +242,6 @@ public class ColegioService {
             for(int j=0; j<x-1; j++) {
 
                 String[] aux = new String[6];
-
-                //System.out.println(alumnosOrdenados[i][4].substring(0,10));
-                //System.out.println(alumnosOrdenados[i+1][4].substring(0,10));
 
                 if (LocalDate.parse(alumnosOrdenados[j][4].substring(0, 10)).isBefore(LocalDate.parse(alumnosOrdenados[j + 1][4].substring(0, 10)))) {
                     System.out.println(alumnosOrdenados[j][1] + " X " + alumnosOrdenados[j + 1][1]);
@@ -284,29 +268,25 @@ public class ColegioService {
             }
         }
 
-        /*
+        int cant = jovenes.getCantidad();
+        if(x<jovenes.getCantidad()) { cant=x; }
+
         String resp = "{";
-        for(int i=0; i<jovenes.getCantidad(); i++){
-            resp+=alumnosOrdenados[i][0];
-            resp+=alumnosOrdenados[i][1];
-            resp+=alumnosOrdenados[i][2];
-            resp+=alumnosOrdenados[i][3];
-            resp+=alumnosOrdenados[i][4];
-            resp+=alumnosOrdenados[i][5];
+        for(int i=0; i<cant; i++){
+            resp+="{\"id\":\""+alumnosOrdenados[i][0]+"\"," +
+            "\"nombre\":\""+alumnosOrdenados[i][1]+"\"," +
+            "\"apellido\":\""+alumnosOrdenados[i][2]+"\"," +
+            "\"libreta\":\""+alumnosOrdenados[i][3]+"\"," +
+            "\"fechaNacimiento\":\""+alumnosOrdenados[i][4]+"\"," +
+            "\"edad\":\""+alumnosOrdenados[i][5]+"\"}";
+            if(i!=cant-1){ resp+=","; }
         }
+        resp+="}";
 
-         */
-
-
-
-
-
-        //System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
-        //System.out.println("\ncantidadDeAlumnos = " + cantidadDeAlumnos);
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
-        return alumnosOrdenados;
+        return resp;
     }
 
 }
