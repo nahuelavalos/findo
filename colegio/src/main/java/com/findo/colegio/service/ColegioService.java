@@ -157,21 +157,38 @@ public class ColegioService {
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
         Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
-        int[] horas = new int[9999];
+        String auxInf = "";
+        String auxSup = "";
+
+        int[] horas = new int[999999];
+
+        WeekFields weekFields = WeekFields.of(Locale.FRANCE);
+
+        auxInf = String.valueOf(cursoExistente.get().getFechaInicio().getYear());
+        auxInf += String.valueOf(cursoExistente.get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
+
+        auxSup = String.valueOf(String.valueOf(cursoExistente.get().getFechaInicio().getYear()));
+        auxSup += String.valueOf(cursoExistente.get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
+
+        System.out.print("Curso: " + auxInf);
+        System.out.println(" - " + auxSup);
 
         for(int i=0; i<horas.length; i++)
         {
-            horas[i]=cursoExistente.get().getHorasSemanales();
+            if(i>=Integer.parseInt(auxInf) && i<=Integer.parseInt(auxSup)) {
+                System.out.print("Entre: i="+i);
+                horas[i] = cursoExistente.get().getHorasSemanales();
+                System.out.println("Horas="+horas[i]);
+            }
         }
 
-        String auxInf = "";
-        String auxSup = "";
+
         int acum=0;
         //boolean flag=true;
 
 
 
-            WeekFields weekFields = WeekFields.of(Locale.FRANCE);
+
             //NUEVO
             for ( int i=0; i<inscripciones.size(); i++) {
                 if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
@@ -193,19 +210,31 @@ public class ColegioService {
                         System.out.println(auxInf);
                         System.out.println(auxSup);
 
-                        for(int j=0; j<Integer.parseInt(auxSup)-Integer.parseInt(auxInf);j++)
-                        {
-                            horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                            System.out.println(horas[j]);
-                            if(horas[j]>20){
-                                System.out.println("Paso las 20 horas semanales");
+                        if(Integer.parseInt(auxInf)==Integer.parseInt(auxSup)) {
+                            horas[Integer.parseInt(auxInf)]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
+                            System.out.println("actual"+Integer.parseInt(auxInf));
+                            if(horas[Integer.parseInt(auxInf)]>20){
+                                System.out.println("1 - Paso las 20 horas semanales");
                                 return false;}
                         }
+                        else {
+                            for(int j=Integer.parseInt(auxInf); j<=Integer.parseInt(auxSup);j++)
+                            {
+                                horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
+                                System.out.println(horas[j]);
+                                if(horas[j]>20){
+                                    System.out.println("2 - Paso las 20 horas semanales");
+                                    return false;}
+                            }
+                        }
+
+
 
                         //horas[0]= Integer.parseInt(auxInf);
                         //horas[0]= cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                        //System.out.println(horas[0]);
-                        //System.out.println(horas[0]);
+                        System.out.println(horas[202036]);
+                        System.out.println(horas[202037]);
+                        System.out.println(horas[202038]);
 
                     }
                 }
