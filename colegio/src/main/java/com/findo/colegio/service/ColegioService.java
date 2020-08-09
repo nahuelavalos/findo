@@ -125,6 +125,14 @@ public class ColegioService {
 
     }
 
+    public boolean isValidRequestJovenes(JovenesDTO jovenes) {
+        if(jovenes.getCurso()<=0 || jovenes.getCantidad()<=0){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     @Autowired
     AlumnoRepository alumnoRepository;
 

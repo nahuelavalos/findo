@@ -78,11 +78,16 @@ public class ColegioController {
 
     @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStats(@RequestBody JovenesDTO jovenes) {
-        if(colegioService.cursoExistente(jovenes)){
-            return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
+        if(colegioService.isValidRequestJovenes(jovenes)){
+            if(colegioService.cursoExistente(jovenes)){
+                return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }
         else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
