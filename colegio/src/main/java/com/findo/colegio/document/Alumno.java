@@ -1,17 +1,10 @@
 package com.findo.colegio.document;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-
 import java.time.LocalDate;
 
-
 @Document(collection = "Alumno")
-
 
 public class Alumno {
     @Id
@@ -22,6 +15,7 @@ public class Alumno {
     private LocalDate fechaNacimiento;
 
     public Integer getId() { return id; }
+    public void setId(Integer id){this.id=id;};
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getLibreta() { return libreta; }

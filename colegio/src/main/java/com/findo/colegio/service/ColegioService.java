@@ -9,8 +9,8 @@ import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
 import com.findo.colegio.repository.InscripcionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
@@ -20,7 +20,6 @@ import java.util.*;
 public class ColegioService {
 
     public static boolean isAlumno(Alumno alumno) {
-
         System.out.print("-------------------------------------------------------");
         System.out.println("-----------------------------------------------------");
 
@@ -31,7 +30,7 @@ public class ColegioService {
         System.out.println("\"fechaNacimiento\":\""+alumno.getFechaNacimiento()+"\"");
 
 
-        if(alumno.getId()<=0 || alumno.getId()>99999999 ||
+        if(//alumno.getId()<=0 || alumno.getId()>99999999 ||
                 alumno.getNombre().isEmpty() || alumno.getNombre().length()>20 ||
                 alumno.getApellido().isEmpty() || alumno.getApellido().length()>20 ||
                 alumno.getLibreta().isEmpty() || alumno.getLibreta().length()>20)
@@ -43,6 +42,14 @@ public class ColegioService {
         }
         else
         {
+            if(alumno.getId()!=null) {
+                if (alumno.getId() <= 0 || alumno.getId() > 99999999) {
+                    System.out.println("Alumno con ID INVALIDO");
+                    return false;
+                }
+            }
+
+
             System.out.println("Alumno OK");
             System.out.print("-------------------------------------------------------");
             System.out.println("-----------------------------------------------------");
@@ -63,7 +70,7 @@ public class ColegioService {
         System.out.println("\"horasSemanales\":\""+curso.getHorasSemanales()+"\"");
 
 
-        if(curso.getId()<=0 || curso.getId()>99999999 ||
+        if(//curso.getId()<=0 || curso.getId()>99999999 ||
                 curso.getNombre().isEmpty() || curso.getNombre().length()>20 ||
                 curso.getHorasSemanales()<=0 || curso.getHorasSemanales()>20 ||
                 curso.getFechaInicio().isBefore(LocalDate.now()) || curso.getFechaFin().isBefore(curso.getFechaInicio())
@@ -74,6 +81,13 @@ public class ColegioService {
         }
         else
         {
+            if(curso.getId()!=null) {
+                if (curso.getId() <= 0 || curso.getId() > 99999999) {
+                    System.out.println("Curso con ID INVALIDO");
+                    return false;
+                }
+            }
+
             System.out.println("Curso OK");
             return true;
         }
@@ -115,8 +129,22 @@ public class ColegioService {
     AlumnoRepository alumnoRepository;
 
     public boolean crearAlumno(Alumno alumno) {
+
+        System.out.println("UNO");
+        System.out.println(alumno.getId());
+
+        if(alumno.getId()==null)
+        {
+                alumno.setId((int) (alumnoRepository.count() + 1));
+                while(alumnoRepository.findById(alumno.getId()).isPresent()){
+                    alumno.setId(alumno.getId()+1);
+                }
+        }
+
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(alumno.getId());
+
         if (!alumnoExistente.isPresent()) {
+
             alumnoRepository.save(alumno);
             return true;
         }
@@ -132,6 +160,15 @@ public class ColegioService {
     CursoRepository cursoRepository;
 
     public boolean crearCurso(Curso curso) {
+
+        if(curso.getId()==null)
+        {
+            curso.setId((int) (cursoRepository.count() + 1));
+            while(cursoRepository.findById(curso.getId()).isPresent()){
+                curso.setId(curso.getId()+1);
+            }
+        }
+
         Optional<Curso> cursoExistente = cursoRepository.findById(curso.getId());
         if (!cursoExistente.isPresent()) {
             cursoRepository.save(curso);
@@ -149,11 +186,8 @@ public class ColegioService {
     InscripcionRepository inscripcionRepository;
 
     public boolean crearInscripcion(Inscripcion inscripcion) {
-        //NUEVO
-        List<Inscripcion> inscripciones = inscripcionRepository.findAll();
-        //NUEVO
 
-        Optional<Inscripcion> inscripcionExistente = inscripcionRepository.findById(inscripcion.getId());
+        List<Inscripcion> inscripciones = inscripcionRepository.findAll();
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
         Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
@@ -162,6 +196,7 @@ public class ColegioService {
 
         int[] horas = new int[999999];
 
+        //Establece el LUNES como inicio de la SEMANA
         WeekFields weekFields = WeekFields.of(Locale.FRANCE);
 
         auxInf = String.valueOf(cursoExistente.get().getFechaInicio().getYear());
@@ -184,79 +219,60 @@ public class ColegioService {
 
 
         int acum=0;
-        //boolean flag=true;
 
+        for ( int i=0; i<inscripciones.size(); i++) {
+            if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
+                if(inscripciones.get(i).getIdCurso()==cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getId()){
+                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getNombre());
+                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio()+" -> ");
+                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear()+" -> ");
+                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
+                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin()+" -> ");
+                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear()+" -> ");
+                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
+                    auxInf = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear());
+                    auxInf += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
 
+                    auxSup = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear());
+                    auxSup += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
-            //NUEVO
-            for ( int i=0; i<inscripciones.size(); i++) {
-                if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
-                    if(inscripciones.get(i).getIdCurso()==cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getId()){
-                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getNombre());
-                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio()+" -> ");
-                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear()+" -> ");
-                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
-                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin()+" -> ");
-                        System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear()+" -> ");
-                        System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
+                    System.out.println(auxInf);
+                    System.out.println(auxSup);
 
-                        auxInf = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear());
-                        auxInf += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
-
-                        auxSup = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear());
-                        auxSup += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
-
-                        System.out.println(auxInf);
-                        System.out.println(auxSup);
-
-                        if(Integer.parseInt(auxInf)==Integer.parseInt(auxSup)) {
-                            horas[Integer.parseInt(auxInf)]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                            System.out.println("actual"+Integer.parseInt(auxInf));
-                            if(horas[Integer.parseInt(auxInf)]>20){
-                                System.out.println("1 - Paso las 20 horas semanales");
-                                return false;}
-                        }
-                        else {
-                            for(int j=Integer.parseInt(auxInf); j<=Integer.parseInt(auxSup);j++)
-                            {
+                    if(Integer.parseInt(auxInf)==Integer.parseInt(auxSup)) {
+                        horas[Integer.parseInt(auxInf)]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
+                        System.out.println("actual"+Integer.parseInt(auxInf));
+                        if(horas[Integer.parseInt(auxInf)]>20){
+                            System.out.println("1 - Paso las 20 horas semanales");
+                            return false;}
+                    }
+                    else {
+                        for(int j=Integer.parseInt(auxInf); j<=Integer.parseInt(auxSup);j++) {
                                 horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
                                 System.out.println(horas[j]);
                                 if(horas[j]>20){
                                     System.out.println("2 - Paso las 20 horas semanales");
                                     return false;}
                             }
-                        }
+                    }
 
-
-
-                        //horas[0]= Integer.parseInt(auxInf);
-                        //horas[0]= cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                        System.out.println(horas[202036]);
-                        System.out.println(horas[202037]);
-                        System.out.println(horas[202038]);
+                    System.out.println(horas[202036]);
+                    System.out.println(horas[202037]);
+                    System.out.println(horas[202038]);
 
                     }
                 }
             }
-            //NUEVO
 
-            inscripcionRepository.save(inscripcion);
-            return true;
-
+        inscripcionRepository.save(inscripcion);
+        return true;
     }
-
-   // public int countAlumnos(Integer idCurso) {
-    //    return inscripcionRepository.countByCurso(true);}
-
-
-
 
     public String fecha(FechaDTO fecha) {
 
         List<Curso> cursos = cursoRepository.findAll();
         List<Inscripcion> inscripciones = inscripcionRepository.findAll();
-        //List<Alumno> alumnos = alumnoRepository.findAll();
 
         Integer horasSemanalesTotales = 0;
         Integer cantidadDeAlumnos = 0;
@@ -271,16 +287,15 @@ public class ColegioService {
                     fecha.getFecha().isAfter(cursos.get(i).getFechaFin())){
 
             }
-            else{
+            else {
                 horasSemanalesTotales+=cursos.get(i).getHorasSemanales();
                 System.out.println("Nombre: "+ cursos.get(i).getNombre());
 
-                for ( int j=0; j<inscripciones.size(); j++)
-                {
+                for ( int j=0; j<inscripciones.size(); j++) {
                     System.out.println(cursos.get(i).getId());
                     System.out.println(inscripciones.get(j).getIdCurso());
-                    if(cursos.get(i).getId()==inscripciones.get(j).getIdCurso())
-                    {
+
+                    if(cursos.get(i).getId()==inscripciones.get(j).getIdCurso()) {
                         boolean flag = false;
                         int cant = 0;
 
@@ -301,14 +316,10 @@ public class ColegioService {
 
                 }
 
-
-                //cantidadDeAlumnos+=inscripcionRepository.countByCurso(cursoExistente.get(i).getId());
-                // countAlumnos(cursoExistente.get(i).getId());
-
-
             }
 
         }
+
         long prom = 0;
 
         for(int i=0; i<cantidadDeAlumnos; i++)
@@ -353,7 +364,6 @@ public class ColegioService {
     public String jovenes(JovenesDTO jovenes) {
 
         List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
-
         String[][] alumnosOrdenados = new String[(int)alumnoRepository.count()][6];
         int x=0;
 
