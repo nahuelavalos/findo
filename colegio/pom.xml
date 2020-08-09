@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.findo</groupId>
 	<artifactId>colegio</artifactId>
-	<version>0.5.2</version>
+	<version>0.5.3</version>
 	<name>colegio</name>
 	<description>Demo project for Spring Boot</description>
 
