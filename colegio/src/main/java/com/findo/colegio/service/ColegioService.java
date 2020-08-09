@@ -316,7 +316,9 @@ public class ColegioService {
             prom+=stats[i][1];
 
         }
-        prom/=cantidadDeAlumnos;
+        if(prom>0) {
+            prom /= cantidadDeAlumnos;
+        }
 
         System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
         System.out.println("cantidadDeAlumnos = " + cantidadDeAlumnos);
