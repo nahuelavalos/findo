@@ -5,8 +5,7 @@ import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.dto.FechaDTO;
-import com.findo.colegio.dto.JovenesRequestDTO;
-import com.findo.colegio.dto.JovenesResponseDTO;
+import com.findo.colegio.dto.JovenesDTO;
 import com.findo.colegio.service.ColegioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,7 +77,7 @@ public class ColegioController {
     }
 
     @GetMapping(value = "/jovenes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getStats(@RequestBody JovenesRequestDTO jovenes) {
+    public ResponseEntity<?> getStats(@RequestBody JovenesDTO jovenes) {
         if(colegioService.cursoExistente(jovenes)){
             return ResponseEntity.status(HttpStatus.OK).body(colegioService.jovenes(jovenes));
         }

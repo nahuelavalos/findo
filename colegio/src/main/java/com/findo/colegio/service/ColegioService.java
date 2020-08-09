@@ -1,11 +1,10 @@
 package com.findo.colegio.service;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.findo.colegio.document.Alumno;
 import com.findo.colegio.document.Curso;
 import com.findo.colegio.document.Inscripcion;
 import com.findo.colegio.dto.FechaDTO;
-import com.findo.colegio.dto.JovenesRequestDTO;
+import com.findo.colegio.dto.JovenesDTO;
 import com.findo.colegio.repository.AlumnoRepository;
 import com.findo.colegio.repository.CursoRepository;
 import com.findo.colegio.repository.InscripcionRepository;
@@ -304,7 +303,7 @@ public class ColegioService {
 
     }
 
-    public boolean cursoExistente(JovenesRequestDTO jovenes) {
+    public boolean cursoExistente(JovenesDTO jovenes) {
 
         Optional<Curso> cursoExistente = cursoRepository.findById(jovenes.getCurso());
         List<Inscripcion> inscripciones = inscripcionRepository.findAll();
@@ -320,7 +319,7 @@ public class ColegioService {
     }
 
 
-    public String jovenes(JovenesRequestDTO jovenes) {
+    public String jovenes(JovenesDTO jovenes) {
 
         List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
 
