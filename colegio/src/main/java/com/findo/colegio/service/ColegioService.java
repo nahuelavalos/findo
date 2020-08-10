@@ -21,39 +21,20 @@ public class ColegioService {
     // ############################ EJERCICIO (1) ############################ //
 
     public static boolean isAlumno(Alumno alumno) {
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
 
-        System.out.print("\"id\":\""+alumno.getId()+"\",");
-        System.out.print("\"nombre\":\""+alumno.getNombre()+"\",");
-        System.out.print("\"apellido\":\""+alumno.getApellido()+"\",");
-        System.out.print("\"libreta\":\""+alumno.getLibreta()+"\",");
-        System.out.println("\"fechaNacimiento\":\""+alumno.getFechaNacimiento()+"\"");
-
-
-        if(//alumno.getId()<=0 || alumno.getId()>99999999 ||
-                alumno.getNombre().isEmpty() || alumno.getNombre().length()>20 ||
+        // Valido Alumno
+        if(alumno.getNombre().isEmpty() || alumno.getNombre().length()>20 ||
                 alumno.getApellido().isEmpty() || alumno.getApellido().length()>20 ||
-                alumno.getLibreta().isEmpty() || alumno.getLibreta().length()>20)
-        {
-            System.out.println("Alumno ERROR");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
+                alumno.getLibreta().isEmpty() || alumno.getLibreta().length()>20) {
             return false;
         }
-        else
-        {
+        else {
             if(alumno.getId()!=null) {
                 if (alumno.getId() <= 0 || alumno.getId() > 99999999) {
-                    System.out.println("Alumno con ID INVALIDO");
                     return false;
                 }
             }
-
-
-            System.out.println("Alumno OK");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
+            //Alumno OK
             return true;
         }
 
@@ -61,28 +42,23 @@ public class ColegioService {
 
     public boolean crearAlumno(Alumno alumno) {
 
-        System.out.println("UNO");
-        System.out.println(alumno.getId());
+        Optional<Alumno> alumnoExistente = alumnoRepository.findById(alumno.getId());
 
-        if(alumno.getId()==null)
-        {
+        //ID Opcional
+        if(alumno.getId()==null) {
             alumno.setId((int) (alumnoRepository.count() + 1));
             while(alumnoRepository.findById(alumno.getId()).isPresent()){
                 alumno.setId(alumno.getId()+1);
             }
         }
 
-        Optional<Alumno> alumnoExistente = alumnoRepository.findById(alumno.getId());
-
+        //ID Existente
         if (!alumnoExistente.isPresent()) {
-
+            //Creo Alumno
             alumnoRepository.save(alumno);
             return true;
         }
         else {
-            System.out.println("Alumno existente");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
             return false;
         }
     }
@@ -95,35 +71,22 @@ public class ColegioService {
 
     public static boolean isCurso(Curso curso) {
 
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
-
-        System.out.print("\"id\":\""+curso.getId()+"\",");
-        System.out.print("\"nombre\":\""+curso.getNombre()+"\",");
-        System.out.print("\"fechaInicio\":\""+curso.getFechaInicio()+"\",");
-        System.out.print("\"fechaFin\":\""+curso.getFechaFin()+"\",");
-        System.out.println("\"horasSemanales\":\""+curso.getHorasSemanales()+"\"");
-
-
-        if(//curso.getId()<=0 || curso.getId()>99999999 ||
-                curso.getNombre().isEmpty() || curso.getNombre().length()>20 ||
+        //Valido Curso
+        if(curso.getNombre().isEmpty() || curso.getNombre().length()>20 ||
                 curso.getHorasSemanales()<=0 || curso.getHorasSemanales()>20 ||
                 curso.getFechaInicio().isBefore(LocalDate.now()) || curso.getFechaFin().isBefore(curso.getFechaInicio())
                 )
         {
-            System.out.println("Curso ERROR");
             return false;
         }
         else
         {
             if(curso.getId()!=null) {
                 if (curso.getId() <= 0 || curso.getId() > 99999999) {
-                    System.out.println("Curso con ID INVALIDO");
                     return false;
                 }
             }
-
-            System.out.println("Curso OK");
+            //Curso OK
             return true;
         }
 
@@ -131,6 +94,9 @@ public class ColegioService {
 
     public boolean crearCurso(Curso curso) {
 
+        Optional<Curso> cursoExistente = cursoRepository.findById(curso.getId());
+
+        //ID Opcional
         if(curso.getId()==null)
         {
             curso.setId((int) (cursoRepository.count() + 1));
@@ -139,15 +105,13 @@ public class ColegioService {
             }
         }
 
-        Optional<Curso> cursoExistente = cursoRepository.findById(curso.getId());
+        //ID Existente
         if (!cursoExistente.isPresent()) {
+            //Creo Curso
             cursoRepository.save(curso);
             return true;
         }
         else {
-            System.out.println("Curso Existente");
-            System.out.print("-------------------------------------------------------");
-            System.out.println("-----------------------------------------------------");
             return false;
         }
     }
@@ -164,22 +128,14 @@ public class ColegioService {
         Optional<Alumno> alumnoExistente = alumnoRepository.findById(inscripcion.getIdAlumno());
         Optional<Curso> cursoExistente = cursoRepository.findById(inscripcion.getIdCurso());
 
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
-
-        System.out.print("\"id\":\""+inscripcion.getId()+"\",");
-        System.out.print("\"idAlumno\":\""+inscripcion.getIdAlumno()+"\",");
-        System.out.println("\"idCurso\":\""+inscripcion.getIdCurso()+"\",");
-
-
+        //Valido Inscripcion
         if(!inscripcionExistente.isPresent() && alumnoExistente.isPresent() && cursoExistente.isPresent()) {
             if (inscripcion.getId() <= 0 || inscripcion.getId() > 99999999 ||
                     inscripcion.getIdAlumno() <= 0 || inscripcion.getIdAlumno() > 99999999 ||
                     inscripcion.getIdCurso() <= 0 || inscripcion.getIdCurso() > 99999999) {
-                System.out.println("Inscripcion ERROR");
                 return false;
             } else {
-                System.out.println("Inscripcion OK");
+                //Inscripcion OK
                 return true;
             }
         }
@@ -214,29 +170,18 @@ public class ColegioService {
         auxSup = String.valueOf(String.valueOf(cursoExistente.get().getFechaInicio().getYear()));
         auxSup += String.valueOf(cursoExistente.get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
-        System.out.print("Curso: " + auxInf);
-        System.out.println(" - " + auxSup);
-
         //Inicializacion del array
         for(int i=0; i<horas.length; i++)
         {
             if(i>=Integer.parseInt(auxInf) && i<=Integer.parseInt(auxSup)) {
-                System.out.print("Entre: i="+i);
                 horas[i] = cursoExistente.get().getHorasSemanales();
-                System.out.println("Horas="+horas[i]);
             }
         }
 
+        //Busco todas las inscripciones del Alumno
         for ( int i=0; i<inscripciones.size(); i++) {
             if(alumnoExistente.get().getId()==inscripciones.get(i).getIdAlumno()){
                 if(inscripciones.get(i).getIdCurso()==cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getId()){
-                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getNombre());
-                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio()+" -> ");
-                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear()+" -> ");
-                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().get(weekFields.weekOfWeekBasedYear()));
-                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin()+" -> ");
-                    System.out.print(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear()+" -> ");
-                    System.out.println(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
                     //Seteo las variables auxiliares con la semana de INICIO y FIN de cada Curso en el que el alumno fue inscripto
                     auxInf = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaInicio().getYear());
@@ -245,33 +190,23 @@ public class ColegioService {
                     auxSup = String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().getYear());
                     auxSup += String.valueOf(cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getFechaFin().get(weekFields.weekOfWeekBasedYear()));
 
-                    System.out.println(auxInf);
-                    System.out.println(auxSup);
-
                     //Logica de Negocio para cuando el Curso dura solo una semana
                     if(Integer.parseInt(auxInf)==Integer.parseInt(auxSup)) {
                         horas[Integer.parseInt(auxInf)]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                        System.out.println("actual"+Integer.parseInt(auxInf));
                         if(horas[Integer.parseInt(auxInf)]>20){
-                            System.out.println("1 - Paso las 20 horas semanales");
+                            //Paso las 20 horas semanales
                             return false;}
                     }
                     //Logica de Negocio para cuando el Curso dura mas de una semana
                     else {
                         for(int j=Integer.parseInt(auxInf); j<=Integer.parseInt(auxSup);j++) {
                             horas[j]+=cursoRepository.findById(inscripciones.get(i).getIdCurso()).get().getHorasSemanales();
-                            System.out.println(horas[j]);
                             if(horas[j]>20){
-                                System.out.println("2 - Paso las 20 horas semanales");
+                                //Paso las 20 horas semanales
                                 return false;
                             }
                         }
                     }
-
-                    System.out.println(horas[202036]);
-                    System.out.println(horas[202037]);
-                    System.out.println(horas[202038]);
-
                 }
             }
         }
@@ -288,6 +223,7 @@ public class ColegioService {
     // ############################ EJERCICIO (4) ############################ //
 
     public boolean isValidRequestJovenes(JovenesDTO jovenes) {
+        //Valido JSON Request
         if(jovenes.getCurso()<=0 || jovenes.getCantidad()<=0){
             return false;
         } else {
@@ -300,6 +236,7 @@ public class ColegioService {
         Optional<Curso> cursoExistente = cursoRepository.findById(jovenes.getCurso());
         List<Inscripcion> inscripciones = inscripcionRepository.findAll();
 
+        //Valido Curso
         if (cursoExistente.isPresent()) {
             for (int i = 0; i < inscripciones.size(); i++) {
                 if (cursoExistente.get().getId() == inscripciones.get(i).getIdCurso()) {
@@ -314,10 +251,6 @@ public class ColegioService {
 
         List<Inscripcion> inscripcionExistente = inscripcionRepository.findAll();
         String[][] alumnosOrdenados = new String[(int)alumnoRepository.count()][6];
-
-
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
 
         int cantidadK = jovenes.getCantidad();
         int cantidadAlumnos = 0;
@@ -337,14 +270,6 @@ public class ColegioService {
                     alumnosOrdenados[cantidadAlumnos][4]=""+alumnoExistente.get().getFechaNacimiento()+"";
                     alumnosOrdenados[cantidadAlumnos][5]=""+ChronoUnit.YEARS.between(alumnoExistente.get().getFechaNacimiento(), LocalDate.now())+"";
                 }
-
-                System.out.println("[\"id\":\""+alumnosOrdenados[cantidadAlumnos][0]+"\"," +
-                        "\"nombre\":\""+alumnosOrdenados[cantidadAlumnos][1]+"\"," +
-                        "\"apellido\":\""+alumnosOrdenados[cantidadAlumnos][2]+"\"," +
-                        "\"libreta\":\""+alumnosOrdenados[cantidadAlumnos][3]+"\"," +
-                        "\"fechaNacimiento\":\""+alumnosOrdenados[cantidadAlumnos][4]+"\"," +
-                        "\"edad\":\""+alumnosOrdenados[cantidadAlumnos][5]+"\"]");
-
                 cantidadAlumnos++;
             }
         }
@@ -372,9 +297,6 @@ public class ColegioService {
         }
         response+="}";
 
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
-
         return response;
     }
 
@@ -387,7 +309,6 @@ public class ColegioService {
                 String[] aux = new String[6];
 
                 if (LocalDate.parse(arrayAlumnos[j][4].substring(0, 10)).isBefore(LocalDate.parse(arrayAlumnos[j + 1][4].substring(0, 10)))) {
-                    System.out.println(arrayAlumnos[j][1] + " X " + arrayAlumnos[j + 1][1]);
                     aux[0] = arrayAlumnos[j][0];
                     aux[1] = arrayAlumnos[j][1];
                     aux[2] = arrayAlumnos[j][2];
@@ -424,11 +345,9 @@ public class ColegioService {
         Integer cantidadDeAlumnos = 0;
         long edadDeAlumnosPromedio = 0;
 
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
-
         //Array para almacenar id de alumnos inscriptos utilizado para evitar repetidos
         Integer[] alumnosInscriptos = new Integer[inscripciones.size()];
+
         //Array para almacenar Edades
         long[] edades = new long[inscripciones.size()];
 
@@ -444,13 +363,9 @@ public class ColegioService {
             else {
                 //Acumulo las horas semanales de los cursos vigentes
                 horasSemanalesTotales+=cursos.get(i).getHorasSemanales();
-                System.out.println("Nombre: "+ cursos.get(i).getNombre());
 
                 //Busco los alumnos inscriptos a los cursos vigentes
                 for ( int j=0; j<inscripciones.size(); j++) {
-                    System.out.println(cursos.get(i).getId());
-                    System.out.println(inscripciones.get(j).getIdCurso());
-
                     if(cursos.get(i).getId()==inscripciones.get(j).getIdCurso()) {
 
                         boolean alumnoRepetido = false;
@@ -464,7 +379,6 @@ public class ColegioService {
                                 alumnoRepetido = true;
                             }
                         }
-                        System.out.println("IdAlumno"+inscripciones.get(j).getIdAlumno());
 
                         //Almaceno las edades de todos los alumnos inscriptos al menos a un curso vigente
                         if(!alumnoRepetido){
@@ -492,12 +406,6 @@ public class ColegioService {
         if(edadDeAlumnosPromedio>0) {
             edadDeAlumnosPromedio /= cantidadDeAlumnos;
         }
-
-        System.out.println("\nhorasSemanalesTotales = " + horasSemanalesTotales);
-        System.out.println("cantidadDeAlumnos = " + cantidadDeAlumnos);
-        System.out.println("edadDeAlumnosPromedio = " + edadDeAlumnosPromedio);
-        System.out.print("-------------------------------------------------------");
-        System.out.println("-----------------------------------------------------");
 
         //Armo el JSON Response
          response = "{\"horasSemanalesTotales\":\""+horasSemanalesTotales+"\","+
