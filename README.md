@@ -180,7 +180,7 @@ Comandos para correr la API REST.
 Por defecto queda levantada en  [http://localhost/8080/](http://localhost/8080/)
 
 ```sh
-$ java -jar colegio-1.0.0.jar
+$ nohup java -jar colegio-1.0.1.jar &
 ```
 
 ## Host
