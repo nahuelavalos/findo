@@ -1,4 +1,4 @@
-# Challenge Técnico Findo
+# Challenge Findo
 
 El Challenge consiste en desarrollar una **API REST** con **Spring Boot** para que un **Colegio** pueda registrar a sus Alumnos y sus Cursos, procesar Inscripciones y obtener Estadísticas.
 
