@@ -34,7 +34,7 @@ Devuelve **200-OK** si registra el curso.\
 Caso contrario devuelve **403-Forbidden**.\
 *El campo **id** es opcional*.
 
-**POST** --> [http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/inscripcion](http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/inscripcion)
+**POST** --> [http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/curso](http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/curso)
 
 >###### Request
 >```sh
@@ -58,7 +58,7 @@ Devuelve **200-OK** si procesa la inscripción.\
 Si no existe el alumno o el curso devuelve **404-NotFund**.\
 Si excede las 20 horas semanales de cursada para el alumno devuelve **400-BadRequest**.\
 
-**POST** --> [http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/curso](http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/curso)
+**POST** --> [http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/inscripcion](http://ec2-18-230-57-17.sa-east-1.compute.amazonaws.com:8080/inscripcion)
 
 >###### Request
 >```sh
