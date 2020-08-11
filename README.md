@@ -86,7 +86,7 @@ Si no existe el curso o el curso no tiene alumnos inscriptos devuelve **404-NotF
 >###### Request
 >```sh
 >{
->   "curso":"31",
+>   "curso":"2",
 >   "cantidad":"2"
 >}
 >```
